@@ -1,0 +1,10 @@
+node_modules/
+.idea/
+.DS_Store
+bower_components/
+jason.json
+npm-debug.log
+coverage/
+.vscode/
+config/dev.json
+config/dev-test.json
