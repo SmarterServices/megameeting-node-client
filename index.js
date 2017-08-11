@@ -2,9 +2,9 @@ var request = require('request')
 var xml2js = require('xml2js');
 var parseString = new xml2js.Parser().parseString;
 var client = function(config) {
-	this.username = config.username || 'SmarterProctoring';
-	this.password = config.password || 'Virtual1';
-	this.url = config.url || 'meeting.onlineproctornow.com';
+	this.username = config.username;
+	this.password = config.password;
+	this.url = config.url;
 }
 
 client.prototype.createMeeting = function(propObj) { 
@@ -15,15 +15,15 @@ client.prototype.createMeeting = function(propObj) {
 client.prototype._createMeeting = function(propObj,token) {
 	return new Promise((resolve,reject) => {
 		var propsList =`` 
-		for(var key in obj) {
+		for(var key in propObj) {
 			propsList += `
 			<item xsi:type="tns:propValPair">
 			<property xsi:type="xsd:string">${key}</property>
-			<value xsi:type="xsd:${typeMapper(key)}">${obj[key]}</value>
+			<value xsi:type="xsd:${typeMapper(key)}">${propObj[key]}</value>
 			</item>`
 		}
 
-		var xml = `<?xml version=""1.0"" encoding=""UTF-8""?>
+		var xml = `<?xml version="1.0" encoding="UTF-8"?>
 		<soapenv:Envelope>
 		xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -39,6 +39,20 @@ client.prototype._createMeeting = function(propObj,token) {
 		</ns1:createMeeting>
 		</soapenv:Body>
 		</soapenv:Envelope>`
+		request.post(
+		{
+			url: `https://${this.url}/api/1.1/service.php`,
+			body: xml,
+			headers: { 'Content-Type': 'text/xml' }
+		},
+		(error, response, body) => {
+			if (!error && response.statusCode == 200) {
+				return resolve({created:true});
+			} else {
+				console.log(body)
+				return reject({created:false,reason:body});
+			}
+		});
 
 })
 }
@@ -167,7 +181,7 @@ var typeMapper = function(key) {
 		case 'enableAutoAccept': return 'boolean'
 		case 'noiseCancelCtrl': return 'boolean'
 		case 'restrictAudioToHost': return 'boolean'
-		case 'resultVideoToHost': return 'boolean'
+		case 'restrictVideoToHost': return 'boolean'
 		case 'videoProfile': return 'numeric'
 		case 'callinNumber': return 'string'
 		case 'moderatorCode': return 'string'
@@ -196,15 +210,25 @@ var typeMapper = function(key) {
 	}
 }
 // var test = new client({})
-// test.getToken()
-// .then(console.log)
-// .catch(console.log)
 
 //example for create endpoint
 // test.createMeeting({
-// 	name: 'Jordan',
-// 	maxVideos: 2
+// 	name:"99c2c5b87e9f11e7bb31be2e44b06b34",
+// 	scheduledDateTime: new Date().toISOString(),
+// 	defaultUserPerms: 'ReceiveAudio,ReceiveVideo,SMD,Chat,VidLayout',
+// 	streaming: 16,
+// 	enableAutoAccept: 1,
+// 	expectedAttendees: 5,
+// 	showMeetWelcome: 0,
+// 	enableChat: 1,
+// 	maxRegistrants: 5,
+// 	maxVideos: 5,
+// 	restrictVideoToHost: 0,
+// 	autoRecord: 1,
+// 	alertSound: 0,
+// 	chatSound: 0
 // })
+// .catch(console.log)
 
 module.exports = client;
 
