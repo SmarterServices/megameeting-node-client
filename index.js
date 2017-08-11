@@ -19,7 +19,7 @@ client.prototype._createMeeting = function(propObj,token) {
 			propsList += `
 			<item xsi:type="tns:propValPair">
 			<property xsi:type="xsd:string">${key}</property>
-			<value xsi:type="xsd:${obj[key].type}">${obj[key].value}</value>
+			<value xsi:type="xsd:${typeMapper(key)}">${obj[key]}</value>
 			</item>`
 		}
 
@@ -39,24 +39,10 @@ client.prototype._createMeeting = function(propObj,token) {
 		</ns1:createMeeting>
 		</soapenv:Body>
 		</soapenv:Envelope>`
-//             WriteOutput("<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">" & chr(10) & chr(13));
-//             WriteOutput("<soapenv:Body>" & chr(10) & chr(13));
-//             WriteOutput("<ns1:createMeeting soapenv:encodingStyle=""http://schemas.xmlsoap.org/soap/encoding/"" xmlns:ns1=""#getURL()#"">" & chr(10) & chr(13));
-//             WriteOutput("<token xsi:type=""xsd:string"">#session_id#</token>" & chr(10) & chr(13));
-//             WriteOutput("<properties xsi:type=""api:propValPairArray"" soapenc:arrayType=""api:propValPair[]"">" & chr(10) & chr(13));
-//             for(i=1; i lte arraylen(args.properties); i++) {
-//                 WriteOutput("<item xsi:type=""tns:propValPair"">" & chr(10) & chr(13));
-//                 WriteOutput("<property xsi:type=""xsd:string"">#args.properties[i].property#</property>" & chr(10) & chr(13));
-//                 WriteOutput("<value xsi:type=""xsd:#args.properties[i].type#"">#args.properties[i].value#</value>" & chr(10) & chr(13));
-//                 WriteOutput("</item>" & chr(10) & chr(13));
-//             }
-//             WriteOutput("</properties>" & chr(10) & chr(13));
-//             WriteOutput("</ns1:createMeeting>" & chr(10) & chr(13));
-//             WriteOutput("</soapenv:Body>" & chr(10) & chr(13));
-//             WriteOutput("</soapenv:Envelope>");
 
 })
 }
+
 client.prototype.deleteVideo = function(recId) {
 	return new Promise((resolve,reject) => {
 		var xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -90,6 +76,7 @@ client.prototype.deleteVideo = function(recId) {
 		});
 	})
 }
+
 client.prototype.getToken = function() {
 	return new Promise((resolve,reject) => {
 		var logIn = `<?xml version="1.0" encoding="UTF-8"?>
@@ -130,10 +117,12 @@ client.prototype.getToken = function() {
 	})
 
 }
+
 client.prototype.listMeetings = function() {
 	return this.getToken()
 	.then(_listMeetings)
 }
+
 client.prototype._listMeetings = function(token) {
 	return new Promise((resolve,reject) => {
 		var xml = `<?xml version="1.0" encoding="UTF-8"?>'
@@ -154,6 +143,58 @@ client.prototype._listMeetings = function(token) {
 	})
 }
 
+var typeMapper = function(key) {
+	switch (key) {
+		case 'name': return 'string'
+		case 'maxVideos': return 'numeric'
+		case 'maxAudio': return 'numeric'
+		case 'expectedAttendees': return 'numeric'
+		case 'defaultUserPerms': return 'string'
+		case 'defaultMicStatus': return 'boolean'
+		case 'defaultDockedVideo': return 'boolean'
+		case 'enableMicToggle': return 'boolean'
+		case 'defaultVidLayout': return 'string'
+		case 'enableLanguageList': return 'boolean'
+		case 'enableOptionsMenu': return 'boolean'
+		case 'enableShortcuts': return 'boolean'
+		case 'enableExitButton': return 'boolean'
+		case 'showMeetWelcome': return 'boolean'
+		case 'maxConnectTime': return 'numeric'
+		case 'scheduledDateTime': return 'date'
+		case 'scheduleTimeZone': return 'string'
+		case 'expireDateTime': return 'string'
+		case 'password': return 'string'
+		case 'enableAutoAccept': return 'boolean'
+		case 'noiseCancelCtrl': return 'boolean'
+		case 'restrictAudioToHost': return 'boolean'
+		case 'resultVideoToHost': return 'boolean'
+		case 'videoProfile': return 'numeric'
+		case 'callinNumber': return 'string'
+		case 'moderatorCode': return 'string'
+		case 'attendeeCode': return 'string'
+		case 'ToolConferenceMode': return 'string'
+		case 'enableMeetingList': return 'boolean'
+		case 'enablePersistChat': return 'boolean'
+		case 'enablePrivateChat': return 'boolean'
+		case 'enableChat': return 'boolean'
+		case 'msDefaultPort': return 'numeric'
+		case 'msDeafultProtocol': return 'string'
+		case 'msDomain': return 'numeric'
+		case 'msApplication': return 'numeric'
+		case 'msEdgeServers': return 'string'
+		case 'streaming': return 'numeric'
+		case 'enableUserList': return 'boolean'
+		case 'hostUserName': return 'string'
+		case 'inviteComments': return 'string'
+		case 'requireRegistration': return 'boolean'
+		case 'requireRegPayment': return 'boolean'
+		case 'maxRegistrants': return 'numeric'
+		case 'TzOffset': return 'numeric'
+		case 'autoRecord': return 'boolean'
+		case 'alertSound': return 'boolean'
+		case 'chatSound': return 'boolean'
+	}
+}
 // var test = new client({})
 // test.getToken()
 // .then(console.log)
@@ -161,64 +202,11 @@ client.prototype._listMeetings = function(token) {
 
 //example for create endpoint
 // test.createMeeting({
-// 	name: {
-// 		type:'string',
-// 		value:'jordan'
-// 	},
-// 	maxVideos: {
-// 		type:'numaric',
-// 		value:2
-// 	}
+// 	name: 'Jordan',
+// 	maxVideos: 2
 // })
 
 module.exports = client;
 
 
-//         required string name,
-//         numeric maxVideos,
-//         numeric maxAudio,
-//         numeric expectedAttendees,
-//         string defaultUserPerms,
-//         boolean defaultMicStatus, 
-//         boolean defaultDockedVideo,
-//         boolean enableMicToggle,
-//         string defaultVidLayout,
-//         boolean enableLanguageList,
-//         boolean enableOptionsMenu,
-//         boolean enableShortcuts,
-//         boolean enableExitButton,
-//         boolean showMeetWelcome,
-//         numeric maxConnectTime,
-//         date scheduledDateTime,
-//         string scheduleTimeZone,
-//         date expireDateTime,
-//         string password,
-//         boolean enableAutoAccept,
-//         boolean noiseCancelCtrl,
-//         boolean restrictAudioToHost,
-//         boolean resultVideoToHost,
-//         numeric videoProfile,
-//         string callinNumber,
-//         string moderatorCode,
-//         string attendeeCode,
-//         string ToolConferenceMode,
-//         boolean enableMeetingList,
-//         boolean enablePersistChat,
-//         boolean enablePrivateChat,
-//         boolean enableChat,
-//         numeric msDefaultPort,
-//         string msDeafultProtocol,
-//         numeric msDomain,
-//         numeric msApplication,
-//         string msEdgeServers,
-//         numeric streaming,
-//         boolean enableUserList,
-//         string hostUserName,
-//         string inviteComments,
-//         boolean requireRegistration,
-//         boolean requireRegPayment,
-//         numeric maxRegistrants,
-//         numeric TzOffset,
-//         boolean autoRecord,
-//         boolean alertSound,
-//         boolean chatSound
+
