@@ -14,6 +14,45 @@ var clientOther = function(config) {
 	this.password = config.password;
 	this.url = config.url;
 }
+clientOther.prototype.createSession = function(meetId) {
+	return new Promise((resolve,reject) => {
+		var xml = `<?xml version="1.0" encoding="UTF-8"?>
+		<soapenv:Envelope>
+		xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<soapenv:Body>
+		<ns1:createSession soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+		<domain xsi:type="xsd:string">${this.url}</domain>
+		<admUser xsi:type="xsd:string">${this.username}</admUser>
+		<admPass xsi:type="xsd:string">${this.password}</admPass>
+		<meetingID xsi:type="xsd:int">${meetId}</meetingID>
+		</ns1:createSession>
+		</soapenv:Body>
+		</soapenv:Envelope>`;
+		request.post(
+		{
+			url: `https://${this.url}/api/1.1/service.php`,
+			body: xml,
+			headers: { 'Content-Type': 'text/xml' }
+		},
+		(error, response, body) => {
+			console.log(error,body)
+			if (!error && response.statusCode == 200) {
+				parseString(body,(err, result) => {
+					if (!err) {
+						return resolve({url: result['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['createSessionResponse'][0]['return'][0]['_']})
+					} else {
+						return reject(err)
+					}
+				});
+			} else {
+				return reject({deleted:false,reason:error});
+			}
+		});
+	})
+
+}
 //entry call for createmeeting that will call gettoken and then pass token to actual createmeeting call
 client.prototype.createMeeting = function(propObj) { 
 	return this.getToken()
@@ -91,7 +130,7 @@ clientOther.prototype.deleteVideo = function(recId) {
 		</soapenv:Envelope>`;
 		request.post(
 		{
-			url: '${this.url}/api/1.1/service.php',
+			url: `https://${this.url}/api/1.1/service.php`,
 			body: xml,
 			headers: { 'Content-Type': 'text/xml' }
 		},
@@ -256,11 +295,14 @@ var typeMapper = function(key) {
 		case 'chatSound': return {type:'boolean',name:'chatSound'}
 	}
 }
-// var test = new client({
-// 	url:,
-// 	username:,
-// 	password:
-// })
+var test = new clientOther({
+	url:'meeting.onlineproctornow.com',
+	username:'SmarterProctoring',
+	password:'Virtual1'
+})
+test.createSession("786603")
+	.then(console.log)
+	.catch(console.log)
 
 // test.listMeetings().then(console.log).catch(console.log)
 // test.createMeeting({
