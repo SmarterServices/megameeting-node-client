@@ -197,7 +197,7 @@ client.prototype._listMeetings = function(token) {
 //this is used to map the str in json object to something that can be used in xml
 var typeMapper = function(key) {
 	switch (key) {
-		case 'meetingName': return {type:'string',name:'Meet_Name'}
+		case 'name': return {type:'string',name:'Meet_Name'}
 		case 'maxVideos': return {type:'numeric',name:'Meet_MaxVideos'}
 		case 'maxAudio': return {type:'numeric',name:'Meet_MaxAudio'}
 		case 'expectedAttendees': return {type:'numeric',name:'Meet_ExpectedAttendees'}
@@ -253,24 +253,24 @@ var typeMapper = function(key) {
 // 	password:''
 // })
 
-test.listMeetings().then(console.log).catch(console.log)
-test.createMeeting({
-	meetingName:"99c2c5b87e9f11e7bb31be2e44b06b34",
-	scheduledDateTime: new Date().toISOString(),
-	defaultUserPerms: 'ReceiveAudio,ReceiveVideo,SMD,Chat,VidLayout',
-	streaming: 16,
-	enableAutoAccept: 1,
-	expectedAttendees: 5,
-	showMeetWelcome: 0,
-	enableChat: 1,
-	maxRegistrants: 5,
-	maxVideos: 5,
-	restrictVideoToHost: 0,
-	autoRecord: 1,
-	alertSound: 0,
-	chatSound: 0
-})
-.catch(console.log)
+// test.listMeetings().then(console.log).catch(console.log)
+// test.createMeeting({
+// 	meetingName:"99c2c5b87e9f11e7bb31be2e44b06b34",
+// 	scheduledDateTime: new Date().toISOString(),
+// 	defaultUserPerms: 'ReceiveAudio,ReceiveVideo,SMD,Chat,VidLayout',
+// 	streaming: 16,
+// 	enableAutoAccept: 1,
+// 	expectedAttendees: 5,
+// 	showMeetWelcome: 0,
+// 	enableChat: 1,
+// 	maxRegistrants: 5,
+// 	maxVideos: 5,
+// 	restrictVideoToHost: 0,
+// 	autoRecord: 1,
+// 	alertSound: 0,
+// 	chatSound: 0
+// })
+// .catch(console.log)
 
 module.exports = {hostClient:client,serviceClient:clientOther};
 
