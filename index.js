@@ -295,14 +295,14 @@ var typeMapper = function(key) {
 		case 'chatSound': return {type:'boolean',name:'chatSound'}
 	}
 }
-var test = new clientOther({
-	url:'meeting.onlineproctornow.com',
-	username:'SmarterProctoring',
-	password:'Virtual1'
-})
-test.createSession("786603")
-	.then(console.log)
-	.catch(console.log)
+// var test = new clientOther({
+// 	url:'meeting.onlineproctornow.com',
+// 	username:'SmarterProctoring',
+// 	password:'Virtual1'
+// })
+// test.createSession("786603")
+// 	.then(console.log)
+// 	.catch(console.log)
 
 // test.listMeetings().then(console.log).catch(console.log)
 // test.createMeeting({
