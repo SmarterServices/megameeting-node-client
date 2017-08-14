@@ -53,12 +53,21 @@ client.prototype._createMeeting = function(propObj,token) {
 		},
 		(error, response, body) => {
 			if (!error && response.statusCode == 200) {
-				return resolve({created:true});
+				parseString(body,(err, result) => {
+					if (!err) {
+						if(result['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['createMeetingResponse'][0]['return'][0]['result'][0]['_'] != '0') {
+							return resolve({created:true,meetId:result['SOAP-ENV:Envelope']['SOAP-ENV:Body'][0]['createMeetingResponse'][0]['return'][0]['result'][0]['_']})
+						} else {
+							return reject({created:false,err:'meeting for name already exists'})
+						}
+					} else {
+					return reject({created:false,reason:'parse xml failed'});
+					}
+				});
 			} else {
 				return reject({created:false,reason:body});
 			}
 		});
-
 })
 }
 //takes recid and deletes a video
@@ -248,14 +257,14 @@ var typeMapper = function(key) {
 	}
 }
 // var test = new client({
-// 	url:'',
-// 	username:'',
-// 	password:''
+// 	url:,
+// 	username:,
+// 	password:
 // })
 
 // test.listMeetings().then(console.log).catch(console.log)
 // test.createMeeting({
-// 	meetingName:"99c2c5b87e9f11e7bb31be2e44b06b34",
+// 	name:"9ss9c2c5b87e9f11e7bb3a1bbbe2e44b06b34",
 // 	scheduledDateTime: new Date().toISOString(),
 // 	defaultUserPerms: 'ReceiveAudio,ReceiveVideo,SMD,Chat,VidLayout',
 // 	streaming: 16,
@@ -270,6 +279,7 @@ var typeMapper = function(key) {
 // 	alertSound: 0,
 // 	chatSound: 0
 // })
+// .then(console.log)
 // .catch(console.log)
 
 module.exports = {hostClient:client,serviceClient:clientOther};
