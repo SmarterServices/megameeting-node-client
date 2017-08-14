@@ -1,21 +1,25 @@
 var request = require('request')
 var xml2js = require('xml2js');
 var parseString = new xml2js.Parser().parseString;
+//hostclient
 var client = function(config) {
 	this.username = config.username;
 	this.password = config.password;
 	this.url = config.url;
 }
 
+//serviceclient
 var clientOther = function(config) {
+	this.username = config.username;
+	this.password = config.password;
 	this.url = config.url;
 }
-
+//entry call for createmeeting that will call gettoken and then pass token to actual createmeeting call
 client.prototype.createMeeting = function(propObj) { 
 	return this.getToken()
 	.then(token => this._createMeeting(propObj,token))
 }
-
+//create meeting takes a propsobj and token. converts the propobj to xml and creates the meeting
 client.prototype._createMeeting = function(propObj,token) {
 	return new Promise((resolve,reject) => {
 		var propsList =`` 
@@ -57,7 +61,7 @@ client.prototype._createMeeting = function(propObj,token) {
 
 })
 }
-
+//takes recid and deletes a video
 clientOther.prototype.deleteVideo = function(recId) {
 	return new Promise((resolve,reject) => {
 		var xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -68,8 +72,8 @@ clientOther.prototype.deleteVideo = function(recId) {
 		<soapenv:Body>
 		<ns1:deleteRecording soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
 		<domain xsi:type="xsd:string">${this.url}</domain>
-		<admUser xsi:type="xsd:string">Exam</admUser>
-		<admPass xsi:type="xsd:string">Meetinz</admPass>
+		<admUser xsi:type="xsd:string">${this.username}</admUser>
+		<admPass xsi:type="xsd:string">${this.password}</admPass>
 		<recID xsi:type="xsd:int">
 		${recId}
 		</recID>
@@ -92,6 +96,7 @@ clientOther.prototype.deleteVideo = function(recId) {
 	})
 }
 
+//no params gets token based on stuff set in constructor
 client.prototype.getToken = function() {
 	return new Promise((resolve,reject) => {
 		var logIn = `<?xml version="1.0" encoding="UTF-8"?>
@@ -132,12 +137,13 @@ client.prototype.getToken = function() {
 	})
 
 }
-
+//entry to list meeting call that calls getToken and then passes token to list meeting
 client.prototype.listMeetings = function() {
 	return this.getToken()
 	.then(token => this._listMeetings(token))
 }
 
+//list meeting takes token and returns json of xml for all meetings
 client.prototype._listMeetings = function(token) {
 	return new Promise((resolve,reject) => {
 		var xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -188,7 +194,7 @@ client.prototype._listMeetings = function(token) {
 
 	})
 }
-
+//this is used to map the str in json object to something that can be used in xml
 var typeMapper = function(key) {
 	switch (key) {
 		case 'meetingName': return {type:'string',name:'Meet_Name'}
@@ -247,24 +253,24 @@ var typeMapper = function(key) {
 // 	password:''
 // })
 
-// test.listMeetings().then(console.log).catch(console.log)
-// test.createMeeting({
-// 	meetingName:"99c2c5b87e9f11e7bb31be2e44b06b34",
-// 	scheduledDateTime: new Date().toISOString(),
-// 	defaultUserPerms: 'ReceiveAudio,ReceiveVideo,SMD,Chat,VidLayout',
-// 	streaming: 16,
-// 	enableAutoAccept: 1,
-// 	expectedAttendees: 5,
-// 	showMeetWelcome: 0,
-// 	enableChat: 1,
-// 	maxRegistrants: 5,
-// 	maxVideos: 5,
-// 	restrictVideoToHost: 0,
-// 	autoRecord: 1,
-// 	alertSound: 0,
-// 	chatSound: 0
-// })
-// .catch(console.log)
+test.listMeetings().then(console.log).catch(console.log)
+test.createMeeting({
+	meetingName:"99c2c5b87e9f11e7bb31be2e44b06b34",
+	scheduledDateTime: new Date().toISOString(),
+	defaultUserPerms: 'ReceiveAudio,ReceiveVideo,SMD,Chat,VidLayout',
+	streaming: 16,
+	enableAutoAccept: 1,
+	expectedAttendees: 5,
+	showMeetWelcome: 0,
+	enableChat: 1,
+	maxRegistrants: 5,
+	maxVideos: 5,
+	restrictVideoToHost: 0,
+	autoRecord: 1,
+	alertSound: 0,
+	chatSound: 0
+})
+.catch(console.log)
 
 module.exports = {hostClient:client,serviceClient:clientOther};
 

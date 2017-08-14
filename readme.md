@@ -14,8 +14,20 @@ Currently includes 2 client libs. The hostClient and serviceClient
 Example:
 
 	var hostClient = require('mega-meeting-client').hostClient			
+
+	hostClient = new hostClient({
+		url:'url',
+		username:'username',
+		password:'password'
+		})
 	
 	var serviceClient = require('mega-meeting-client').serviceClient
+	
+	serviceClient = new serviceClient({
+		url:'url',
+		username:'username',
+		password:'password'
+		})
 	
 	hostClient.createMeeting({
 	meetingName:"99c2c5b87e9f11e7bb31be2e44b06b34",
