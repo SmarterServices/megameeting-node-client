@@ -54,14 +54,14 @@ clientOther.prototype.createSession = function(meetId) {
 
 }
 //entry call for createmeeting that will call gettoken and then pass token to actual createmeeting call
-client.prototype.createMeeting = function(propObj) { 
+client.prototype.createMeeting = function(propObj) {
 	return this.getToken()
 	.then(token => this._createMeeting(propObj,token))
 }
 //create meeting takes a propsobj and token. converts the propobj to xml and creates the meeting
 client.prototype._createMeeting = function(propObj,token) {
 	return new Promise((resolve,reject) => {
-		var propsList =`` 
+		var propsList =``
 		for(var key in propObj) {
 			propsList += `
 			<item xsi:type="tns:propValPair">
@@ -77,7 +77,7 @@ client.prototype._createMeeting = function(propObj,token) {
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<soapenv:Body>
 		<ns1:createMeeting soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-		<token xsi:type="xsd:string">${token}</token> 
+		<token xsi:type="xsd:string">${token}</token>
 		<properties xsi:type="api:propValPairArray" soapenc:arrayType="api:propValPair[]">
 		${propsList}
 		</properties>
@@ -196,15 +196,15 @@ client.prototype._listMeetings = function(token) {
 	return new Promise((resolve,reject) => {
 		var xml = `<?xml version="1.0" encoding="UTF-8"?>
 		<soapenv:Envelope>
-		xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
-		xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> 
-		<soapenv:Body> 
-		<ns1:getRecordingList soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
-		xmlns:ns1="#getURL()#"> 
-		<token xsi:type="xsd:string">${token}</token> 
-		</ns1:getRecordingList> 
-		</soapenv:Body> 
+		xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<soapenv:Body>
+		<ns1:getRecordingList soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+		xmlns:ns1="#getURL()#">
+		<token xsi:type="xsd:string">${token}</token>
+		</ns1:getRecordingList>
+		</soapenv:Body>
 		</soapenv:Envelope>`;
 		request.post(
 		{
@@ -290,9 +290,9 @@ var typeMapper = function(key) {
 		case 'requireRegPayment': return {type:'boolean',name:'Meet_RequireRegPayment'}
 		case 'maxRegistrants': return {type:'numeric',name:'Meet_MaxRegistrants'}
 		case 'TzOffset': return {type:'numeric',name:'TzOffset'}
-		case 'autoRecord': return {type:'boolean',name:'autoRecord'}
-		case 'alertSound': return {type:'boolean',name:'alertSound'}
-		case 'chatSound': return {type:'boolean',name:'chatSound'}
+		case 'autoRecord': return {type:'boolean',name:'autoRecord',name:'Meet_AutoRecord'}
+		case 'alertSound': return {type:'boolean',name:'alertSound',name:'Meet_AlertSound'}
+		case 'chatSound': return {type:'boolean',name:'chatSound',name:'Meet_ChatSound'}
 	}
 }
 // var test = new clientOther({
@@ -325,6 +325,3 @@ var typeMapper = function(key) {
 // .catch(console.log)
 
 module.exports = {hostClient:client,serviceClient:clientOther};
-
-
-
